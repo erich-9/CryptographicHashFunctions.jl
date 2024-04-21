@@ -1,6 +1,6 @@
 import Aqua
-import Hashing
+import CryptographicHashFunctions
 
 @testset "Aqua.jl" begin
-    Aqua.test_all(Hashing)
+    Aqua.test_all(CryptographicHashFunctions)
 end

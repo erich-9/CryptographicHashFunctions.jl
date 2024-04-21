@@ -7,13 +7,13 @@ CollapsedDocStrings = true
 ## Hash Algorithms
 
 ```@autodocs
-Modules = [Hashing]
-Filter = t -> t isa Hashing.HashAlgorithmID
+Modules = [CryptographicHashFunctions]
+Filter = t -> t isa CryptographicHashFunctions.HashAlgorithmID
 ```
 
 ## XOF Algorithms
 
 ```@autodocs
-Modules = [Hashing]
-Filter = t -> t isa Hashing.XOFAlgorithmID
+Modules = [CryptographicHashFunctions]
+Filter = t -> t isa CryptographicHashFunctions.XOFAlgorithmID
 ```

@@ -1,6 +1,6 @@
 module OpenSSL
 
-import ..Hashing as P
+import ..CryptographicHashFunctions as P
 import Base.Libc.Libdl: dlopen, dlsym
 import OpenSSL_jll
 

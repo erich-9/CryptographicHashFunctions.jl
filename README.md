@@ -1,17 +1,17 @@
-# Hashing.jl
+# CryptographicHashFunctions.jl
 
 *Fast cryptographic hash functions for Julia.*
 
 [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE)
-[![Documentation (stable)](https://img.shields.io/badge/docs-stable-blue.svg)](https://erich-9.github.io/Hashing.jl/stable)
-[![Documentation (dev)](https://img.shields.io/badge/docs-dev-blue.svg)](https://erich-9.github.io/Hashing.jl/dev)
-[![Build Status](https://github.com/erich-9/Hashing.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/erich-9/Hashing.jl/actions/workflows/CI.yml)
+[![Documentation (stable)](https://img.shields.io/badge/docs-stable-blue.svg)](https://erich-9.github.io/CryptographicHashFunctions.jl/stable)
+[![Documentation (dev)](https://img.shields.io/badge/docs-dev-blue.svg)](https://erich-9.github.io/CryptographicHashFunctions.jl/dev)
+[![Build Status](https://github.com/erich-9/CryptographicHashFunctions.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/erich-9/CryptographicHashFunctions.jl/actions/workflows/CI.yml)
 [![Aqua](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
-[![Coverage](https://codecov.io/github/erich-9/Hashing.jl/branch/main/graph/badge.svg)](https://codecov.io/github/erich-9/Hashing.jl)
+[![Coverage](https://codecov.io/github/erich-9/CryptographicHashFunctions.jl/branch/main/graph/badge.svg)](https://codecov.io/github/erich-9/CryptographicHashFunctions.jl)
 
-This package makes available fast implementations of many [cryptographic hash functions](https://en.wikipedia.org/wiki/Cryptographic_hash_function) for use in Julia.
+This package provides fast implementations of many [cryptographic hash functions](https://en.wikipedia.org/wiki/Cryptographic_hash_function) for use in Julia.
 Its high-level interface is designed to match the one of Julia's standard library package [SHA](https://docs.julialang.org/en/v1/stdlib/SHA/).
-In particular, [Hashing.jl](https://github.com/erich-9/Hashing.jl) can be used as a replacement for [SHA.jl](https://github.com/JuliaCrypto/SHA.jl) where performance is relevant.
+In particular, it can effortlessly replace [SHA.jl](https://github.com/JuliaCrypto/SHA.jl) where performance is relevant.
 
 ## Algorithms
 
@@ -34,5 +34,5 @@ The supported hash functions and [extendable-output functions](https://en.wikipe
 
 The algorithms are provided by binding to the following cryptographic libraries:
 
-  - [OpenSSL](https://www.openssl.org/) based on [OpenSSL_jll.jl](https://github.com/JuliaBinaryWrappers/OpenSSL_jll.jl)
-  - [Libgcrypt](https://gnupg.org/software/libgcrypt/index.html) based on [Libgcrypt_jll.jl](https://github.com/JuliaBinaryWrappers/Libgcrypt_jll.jl)
+  - [OpenSSL](https://www.openssl.org/) via [OpenSSL_jll.jl](https://github.com/JuliaBinaryWrappers/OpenSSL_jll.jl)
+  - [Libgcrypt](https://gnupg.org/software/libgcrypt/index.html) via [Libgcrypt_jll.jl](https://github.com/JuliaBinaryWrappers/Libgcrypt_jll.jl)

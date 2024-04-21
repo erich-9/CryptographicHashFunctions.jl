@@ -3,7 +3,7 @@
 First, load the package:
 
 ```@example usage
-using Hashing
+using CryptographicHashFunctions
 ```
 
 ## High-Level
@@ -31,7 +31,8 @@ bytes2hex(hmac_sha256("some key", "some data"))
 The backend used to do the hashing can be specified with the keyword argument `provider`:
 
 ```@example usage
-sha256(""; provider = Hashing.OpenSSL) == sha256(""; provider = Hashing.Libgcrypt)
+sha256(""; provider = CryptographicHashFunctions.OpenSSL) ==
+sha256(""; provider = CryptographicHashFunctions.Libgcrypt)
 ```
 
 Extracting a fixed number of bytes from an extendable-output function can be done either in one go
@@ -54,7 +55,7 @@ The low-level interface allows for more controlled operations.
 Setting up a hash context, feeding it with some data, and finally computing the digest works as follows:
 
 ```@example usage
-ctx = context(SHA3_224; provider = Hashing.Libgcrypt)
+ctx = context(SHA3_224)
 update!(ctx, "Hash ")
 update!(ctx, "me!")
 bytes2hex(digest!(ctx))
@@ -63,7 +64,7 @@ bytes2hex(digest!(ctx))
 Or, in the case of an extendable-output function:
 
 ```@example usage
-ctx = context(SHAKE256, "Hash and "; provider = Hashing.Libgcrypt)
+ctx = context(SHAKE256, "Hash and "; provider = CryptographicHashFunctions.Libgcrypt)
 update!(ctx, IOBuffer("extract me!"); buffersize = 2)
 [bytes2hex(digest!(ctx, 15)) for i ∈ 1:5]
 ```
@@ -77,7 +78,7 @@ reset!(ctx)
 [bytes2hex(digest!(ctx)), bytes2hex(digest!(ctx_copy))]
 ```
 
-Dealing with HMAC objects is similar:
+Dealing with HMAC objects works similarly:
 
 ```@example usage
 hmac = HMAC(SHA256, "some key")

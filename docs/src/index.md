@@ -1,10 +1,10 @@
-# Hashing.jl
+# CryptographicHashFunctions.jl
 
 *Fast cryptographic hash functions for Julia.*
 
-This package makes available fast implementations of many [cryptographic hash functions](https://en.wikipedia.org/wiki/Cryptographic_hash_function) for use in Julia.
+This package provides fast implementations of many [cryptographic hash functions](https://en.wikipedia.org/wiki/Cryptographic_hash_function) for use in Julia.
 Its high-level interface is designed to match the one of Julia's standard library package [SHA](https://docs.julialang.org/en/v1/stdlib/SHA/).
-In particular, [Hashing.jl](https://github.com/erich-9/Hashing.jl) can be used as a replacement for [SHA.jl](https://github.com/JuliaCrypto/SHA.jl) where performance is relevant.
+In particular, it can effortlessly replace [SHA.jl](https://github.com/JuliaCrypto/SHA.jl) where performance is relevant.
 
 ## Algorithms
 
@@ -27,5 +27,5 @@ The supported hash functions and [extendable-output functions](https://en.wikipe
 
 The algorithms are provided by binding to the following cryptographic libraries:
 
-  - [OpenSSL](https://www.openssl.org/) based on [OpenSSL_jll.jl](https://github.com/JuliaBinaryWrappers/OpenSSL_jll.jl)
-  - [Libgcrypt](https://gnupg.org/software/libgcrypt/index.html) based on [Libgcrypt_jll.jl](https://github.com/JuliaBinaryWrappers/Libgcrypt_jll.jl)
+  - [OpenSSL](https://www.openssl.org/) via [OpenSSL_jll.jl](https://github.com/JuliaBinaryWrappers/OpenSSL_jll.jl)
+  - [Libgcrypt](https://gnupg.org/software/libgcrypt/index.html) via [Libgcrypt_jll.jl](https://github.com/JuliaBinaryWrappers/Libgcrypt_jll.jl)

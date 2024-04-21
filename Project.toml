@@ -1,4 +1,4 @@
-name = "Hashing"
+name = "CryptographicHashFunctions"
 uuid = "59f36028-7e5a-47c1-b5da-23e00bab95ae"
 authors = ["Erich Neun <erich-9@gmx.de> and contributors"]
 version = "0.0.1"

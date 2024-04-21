@@ -1,7 +1,7 @@
-using Documenter, Hashing
+using Documenter, CryptographicHashFunctions
 
 makedocs(
-    sitename = "Hashing.jl",
+    sitename = "CryptographicHashFunctions.jl",
     pages = [
         "Home" => "index.md",
         "installation.md",
@@ -10,4 +10,4 @@ makedocs(
     ],
 )
 
-deploydocs(repo = "github.com/erich-9/Hashing.jl.git")
+deploydocs(repo = "github.com/erich-9/CryptographicHashFunctions.jl.git")

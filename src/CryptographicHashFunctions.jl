@@ -1,4 +1,4 @@
-module Hashing
+module CryptographicHashFunctions
 
 export digest, hmac_digest
 export HMAC, context, reset!, update!, digest!
@@ -88,16 +88,22 @@ include("./OpenSSL.jl")
 include("./Libgcrypt.jl")
 
 """
-Supported providers, represented as a tuple of submodules.
+Supported providers, represented as a tuple of submodules. Currently:
 
-Currently, `Hashing.providers == (Hashing.OpenSSL, Hashing.Libgcrypt)`.
+```julia-repl
+julia> CryptographicHashFunctions.providers
+(CryptographicHashFunctions.OpenSSL, CryptographicHashFunctions.Libgcrypt)
+```
 """
 const providers = (OpenSSL, Libgcrypt)
 
 """
-Default provider, represented as a submodule.
+Default provider, represented as a submodule. Currently:
 
-Currently, `Hashing.default_provider == Hashing.OpenSSL`.
+```julia-repl
+julia> CryptographicHashFunctions.default_provider
+CryptographicHashFunctions.OpenSSL
+```
 """
 const default_provider = first(providers)
 
@@ -174,8 +180,8 @@ function context(algoid, data; provider = default_provider, kwargs...)
     ctx
 end
 
-function update!(obj::HMAC, data; kwargs...)
-    update!(obj.ctx, data; kwargs...)
+function update!(hmac::HMAC, data; kwargs...)
+    update!(hmac.ctx, data; kwargs...)
 end
 
 function update!(ctx::Context, io::IO; buffersize = 4096)

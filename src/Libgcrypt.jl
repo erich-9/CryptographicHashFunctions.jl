@@ -1,6 +1,6 @@
 module Libgcrypt
 
-import ..Hashing as P
+import ..CryptographicHashFunctions as P
 import Libgcrypt_jll
 
 const lib = Libgcrypt_jll.libgcrypt

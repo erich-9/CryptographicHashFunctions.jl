@@ -1,6 +1,16 @@
-import Hashing: shake128, shake256
-import Hashing: Hashing, HashAlgorithmID, XOFAlgorithmID
-import Hashing: digest, hmac_digest, context, reset!, update!, digest!
+import CryptographicHashFunctions:
+    CryptographicHashFunctions,
+    HashAlgorithmID,
+    XOFAlgorithmID,
+    providers,
+    shake128,
+    shake256,
+    digest,
+    hmac_digest,
+    context,
+    reset!,
+    update!,
+    digest!
 
 import Base.Iterators: drop, flatten
 import Nettle
@@ -27,7 +37,7 @@ testdata3 = flatten((testdata1, testdata2))
     end
 end
 
-for provider ∈ Hashing.providers
+for provider ∈ CryptographicHashFunctions.providers
     @testset "$provider" begin
         for algoid ∈ keys(provider.algorithms)
             @testset "$algoid" begin
@@ -60,7 +70,7 @@ for provider ∈ Hashing.providers
     end
 end
 
-for (i, p₁) ∈ enumerate(Hashing.providers), p₂ ∈ drop(Hashing.providers, i)
+for (i, p₁) ∈ enumerate(providers), p₂ ∈ drop(providers, i)
     @testset "$p₁ vs. $p₂" begin
         for algoid ∈ keys(p₁.algorithms)
             haskey(p₂.algorithms, algoid) || continue
@@ -104,12 +114,12 @@ end
 
         @testset "$h" begin
             for data ∈ testdata2
-                dgst₁ = getfield(Hashing, h)(data)
+                dgst₁ = getfield(CryptographicHashFunctions, h)(data)
                 dgst₂ = Nettle.digest(String(h), data)
                 @test dgst₁ == dgst₂
 
                 for key ∈ testdata2
-                    dgst₁ = getfield(Hashing, hmac_h)(key, data)
+                    dgst₁ = getfield(CryptographicHashFunctions, hmac_h)(key, data)
                     dgst₂ = Nettle.digest(String(h), key, data)
                     @test dgst₁ == dgst₂
                 end

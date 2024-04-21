@@ -7,20 +7,20 @@ CollapsedDocStrings = true
 ## Hash Functions
 
 ```@autodocs
-Modules = [Hashing]
-Filter = t -> t in Hashing.functions.hash
+Modules = [CryptographicHashFunctions]
+Filter = t -> t in CryptographicHashFunctions.functions.hash
 ```
 
 ## HMAC Functions
 
 ```@autodocs
-Modules = [Hashing]
-Filter = t -> t in Hashing.functions.hmac
+Modules = [CryptographicHashFunctions]
+Filter = t -> t in CryptographicHashFunctions.functions.hmac
 ```
 
 ## XOF Functions
 
 ```@autodocs
-Modules = [Hashing]
-Filter = t -> t in Hashing.functions.xof
+Modules = [CryptographicHashFunctions]
+Filter = t -> t in CryptographicHashFunctions.functions.xof
 ```

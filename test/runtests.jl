@@ -1,4 +1,4 @@
-module TestHashing
+module TestCryptographicHashFunctions
 
 using Test
 
