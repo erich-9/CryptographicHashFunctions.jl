@@ -2,13 +2,6 @@
 
 *Fast cryptographic hash functions for Julia.*
 
-[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE)
-[![Documentation (stable)](https://img.shields.io/badge/docs-stable-blue.svg)](https://erich-9.github.io/Hashing.jl/stable)
-[![Documentation (dev)](https://img.shields.io/badge/docs-dev-blue.svg)](https://erich-9.github.io/Hashing.jl/dev)
-[![Build Status](https://github.com/erich-9/Hashing.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/erich-9/Hashing.jl/actions/workflows/CI.yml)
-[![Aqua](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
-[![Coverage](https://codecov.io/github/erich-9/Hashing.jl/branch/main/graph/badge.svg)](https://codecov.io/github/erich-9/Hashing.jl)
-
 This package makes available fast implementations of many [cryptographic hash functions](https://en.wikipedia.org/wiki/Cryptographic_hash_function) for use in Julia.
 Its high-level interface is designed to match the one of Julia's standard library package [SHA](https://docs.julialang.org/en/v1/stdlib/SHA/).
 In particular, [Hashing.jl](https://github.com/erich-9/Hashing.jl) can be used as a replacement for [SHA.jl](https://github.com/JuliaCrypto/SHA.jl) where performance is relevant.

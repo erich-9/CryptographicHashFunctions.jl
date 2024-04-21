@@ -1,7 +1,7 @@
 module Hashing
 
 export digest, hmac_digest
-export HMAC, XOF, context, reset!, update!, digest!
+export HMAC, context, reset!, update!, digest!
 
 @enum HashAlgorithmID begin
     BLAKE2B_160
@@ -47,14 +47,58 @@ const AlgorithmID = Union{AlgorithmIDs...}
 
 abstract type Context{T} end
 
+"""
+    reset!(ctx)
+
+Reset the state of the hash context `ctx`. Afterwards, `ctx` can be used in the same way as
+a freshly created hash context with the same associated algorithm.
+"""
 function reset! end
+
+"""
+    update!(obj, data[; provider, kwargs...])
+
+Feed `data` into the hash context or HMAC object `obj`.
+
+The argument `data` can be of type `AbstractVector{UInt8}`, `AbstractString`, `IO`, or any
+other type that can be collected into a vector of bytes.
+
+When reading `data` of type `IO`, the buffer size can be set with the optional keyword
+argument `buffersize`.
+"""
 function update! end
+
+"""
+    digest!(obj)
+
+Return the digest for the HMAC object or hash context `obj` of a hash algorithm.
+
+Unless `reset!` is called before, further calls to `update!` or `digest!` are not allowed.
+
+    digest!(ctx, len)
+
+Return the next `len` bytes of the digest for the hash context `ctx` of an XOF algorithm.
+
+Unless `reset!` is called before, further calls to `update!` are not allowed. If the
+provider does not support streaming, further calls to `digest!` are forbidden, too.
+"""
 function digest! end
 
 include("./OpenSSL.jl")
 include("./Libgcrypt.jl")
 
+"""
+Supported providers, represented as a tuple of submodules.
+
+Currently, `Hashing.providers == (Hashing.OpenSSL, Hashing.Libgcrypt)`.
+"""
 const providers = (OpenSSL, Libgcrypt)
+
+"""
+Default provider, represented as a submodule.
+
+Currently, `Hashing.default_provider == Hashing.OpenSSL`.
+"""
 const default_provider = first(providers)
 
 bytes(data::AbstractVector{UInt8}) = data
@@ -62,16 +106,41 @@ bytes(data::AbstractString) = codeunits(data)
 bytes(data::IO) = read(data)
 bytes(data) = collect(UInt8, data)
 
-function digest(algoid, data, args...; provider = default_provider, kwargs...)
-    digest!(context(algoid, data; provider, kwargs...), args...)
+"""
+    digest(algoid, data[; provider, kwargs...])
+
+Return the digest of `data` computed with the hash algorithm `algoid`.
+"""
+function digest(algoid, data; provider = default_provider, kwargs...)
+    digest!(context(algoid, data; provider, kwargs...))
 end
 
+"""
+    digest(algoid, data, len[; provider, kwargs...])
+
+Return the first `len` bytes of the digest of `data` computed with the XOF algorithm
+`algoid`.
+"""
+function digest(algoid, data, len; provider = default_provider, kwargs...)
+    digest!(context(algoid, data; provider, kwargs...), len)
+end
+
+"""
+    hmac_digest(algoid, key, data[; provider, kwargs...])
+
+Return the HMAC of `data` keyed with `key` computed with the hash algorithm `algoid`.
+"""
 function hmac_digest(algoid, key, data; provider = default_provider, kwargs...)
     hmac = HMAC(algoid, key; provider)
     update!(hmac, data; kwargs...)
     digest!(hmac)
 end
 
+"""
+    HMAC(algoid, key[; provider])
+
+Return a new HMAC object keyed with `key` for the hash algorithm `algoid`.
+"""
 struct HMAC
     outer_key::Vector{UInt8}
     ctx::Context{HashAlgorithmID}
@@ -85,30 +154,32 @@ struct HMAC
     end
 end
 
-struct XOF
-    ctx::Context{XOFAlgorithmID}
+"""
+    context(algoid[; provider])
 
-    function XOF(algoid, data; provider = default_provider, kwargs...)
-        new(context(algoid, data; provider, kwargs...))
-    end
-end
-
+Return a new hash context for the algorithm `algoid`.
+"""
 function context(algoid; provider = default_provider)
     provider.Context(algoid)
 end
 
+"""
+    context(algoid, data[; provider, kwargs...])
+
+Return a new hash context for the algorithm `algoid` and initialize it with `data`.
+"""
 function context(algoid, data; provider = default_provider, kwargs...)
     ctx = provider.Context(algoid)
     update!(ctx, data; kwargs...)
     ctx
 end
 
-function update!(hmac::HMAC, data; kwargs...)
-    update!(hmac.ctx, data; kwargs...)
+function update!(obj::HMAC, data; kwargs...)
+    update!(obj.ctx, data; kwargs...)
 end
 
-function update!(ctx::Context, io::IO; chunksize = 4096)
-    data = Vector{UInt8}(undef, chunksize)
+function update!(ctx::Context, io::IO; buffersize = 4096)
+    data = Vector{UInt8}(undef, buffersize)
     while !eof(io)
         len = readbytes!(io, data)
         update!(ctx, data, len)
@@ -124,7 +195,7 @@ function update!(ctx::Context, tpl::NTuple{N, UInt8}) where {N}
     end
 end
 
-function update!(ctx::Context, str::AbstractString)
+function update!(ctx::Context, str)
     update!(ctx, bytes(str))
 end
 
@@ -136,12 +207,10 @@ function digest!(hmac::HMAC)
     digest!(hmac.ctx)
 end
 
-function digest!(xof::XOF, len::Integer)
-    digest!(xof.ctx, len)
-end
-
 begin
-    streaming_providers = filter(x -> x.supports_streaming, providers)
+    const functions = (; id = [], hash = [], hmac = [], xof = [])
+
+    const streaming_providers = filter(x -> x.supports_streaming, providers)
 
     select_provider(algoid, providers) =
         let i = findfirst(x -> haskey(x.algoid_mapping, algoid), providers)
@@ -158,8 +227,10 @@ begin
         @eval begin
             export $H, $h
 
-            $h(data, args...; provider = $provider, kwargs...) =
-                digest($algoid, data, args...; provider, kwargs...)
+            """
+            Identifier for the $($H) algorithm.
+            """
+            $H
         end
 
         if algoid isa HashAlgorithmID
@@ -168,18 +239,53 @@ begin
             @eval begin
                 export $hmac_h
 
+                """
+                    $($h)(data[; provider, kwargs...])
+
+                Return the digest of `data` computed with the $($H) algorithm.
+                """
+                $h(data; provider = $provider, kwargs...) =
+                    digest($algoid, data; provider, kwargs...)
+
+                """
+                    $($hmac_h)(key, data[; provider, kwargs...])
+
+                Return the HMAC of `data` keyed with `key` computed with the $($H)
+                algorithm.
+                """
                 $hmac_h(key, data; provider = $provider, kwargs...) =
                     hmac_digest($algoid, key, data; provider, kwargs...)
+
+                push!(functions.hash, $h)
+                push!(functions.hmac, $hmac_h)
             end
         end
 
         if algoid isa XOFAlgorithmID
+            @eval begin
+                """
+                    $($h)(data, len[; provider, kwargs...])
+
+                Return the first `len` bytes of the digest of `data` computed with the $($H)
+                algorithm.
+                """
+                $h(data, len; provider = $provider, kwargs...) =
+                    digest($algoid, data, len; provider, kwargs...)
+
+                push!(functions.xof, $h)
+            end
+
             provider = select_provider(algoid, streaming_providers)
 
             if !isnothing(provider)
                 @eval begin
+                    """
+                        $($h)(data[; provider, kwargs...])
+
+                    Return a hash context initialized with `data` for the $($H) algorithm.
+                    """
                     $h(data; provider = $provider, kwargs...) =
-                        XOF($algoid, data; provider, kwargs...)
+                        context($algoid, data; provider, kwargs...)
                 end
             end
         end
