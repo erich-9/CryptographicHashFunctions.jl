@@ -37,7 +37,7 @@ testdata3 = flatten((testdata1, testdata2))
     end
 end
 
-for provider ∈ CryptographicHashFunctions.providers
+for provider ∈ providers
     @testset "$provider" begin
         for algoid ∈ keys(provider.algorithms)
             @testset "$algoid" begin

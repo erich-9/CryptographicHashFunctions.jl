@@ -38,7 +38,7 @@ function available(algoid_external)
         C_NULL::Ptr{Cvoid},
         algoid_external::Cstring,
         C_NULL::Ptr{Cvoid},
-    )::Ptr{Cvoid}
+    )::Cmd
 
     res = md != C_NULL
 
@@ -50,7 +50,7 @@ end
 mutable struct Algorithm{T}
     identifier::T
     blocksize::Int
-    outsize::Int
+    digestsize::Int
     md::Cmd
 
     function Algorithm(algoid::T, algoid_external) where {T}
@@ -58,13 +58,13 @@ mutable struct Algorithm{T}
             C_NULL::Ptr{Cvoid},
             algoid_external::Cstring,
             C_NULL::Ptr{Cvoid},
-        )::Ptr{Cvoid}
+        )::Cmd
         md != C_NULL || error("EVP_MD_fetch failed for $algoid")
 
         blocksize = @ccall lib.EVP_MD_get_block_size(md::Cmd)::Cint
-        outsize = @ccall lib.EVP_MD_get_size(md::Cmd)::Cint
+        digestsize = @ccall lib.EVP_MD_get_size(md::Cmd)::Cint
 
-        finalizer(new{T}(algoid, blocksize, outsize, md)) do x
+        finalizer(new{T}(algoid, blocksize, digestsize, md)) do x
             @ccall lib.EVP_MD_free(x.md::Cmd)::Cvoid
         end
     end
@@ -122,7 +122,7 @@ function P.update!(ctx::Context, data::AbstractVector{UInt8}, len::Integer = len
 end
 
 function P.digest!(ctx::Context{P.HashAlgorithmID})
-    res = Vector{UInt8}(undef, ctx.algo.outsize)
+    res = Vector{UInt8}(undef, ctx.algo.digestsize)
 
     ctx.finalized && error("multiple calls to digest! not allowed")
     ctx.finalized = true

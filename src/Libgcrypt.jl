@@ -63,15 +63,15 @@ end
 struct Algorithm{T}
     identifier::T
     blocksize::Int
-    outsize::Int
+    digestsize::Int
     algono::Cgcry_md_algos
 
     function Algorithm(algoid::T, algoid_external) where {T}
         (algono, blocksize) = algoid_external
 
-        outsize = @ccall lib.gcry_md_get_algo_dlen(algono::Cgcry_md_algos)::Cuint
+        digestsize = @ccall lib.gcry_md_get_algo_dlen(algono::Cgcry_md_algos)::Cuint
 
-        new{T}(algoid, blocksize, outsize, algono)
+        new{T}(algoid, blocksize, digestsize, algono)
     end
 end
 
@@ -132,7 +132,7 @@ function P.digest!(ctx::Context{P.HashAlgorithmID})
             ctx.algo.algono::Cgcry_md_algos,
         )::Ptr{Cuchar}
 
-        copy(unsafe_wrap(Vector{UInt8}, rv, ctx.algo.outsize))
+        copy(unsafe_wrap(Vector{UInt8}, rv, ctx.algo.digestsize))
     end
 end
 
