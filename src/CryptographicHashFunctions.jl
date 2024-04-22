@@ -88,6 +88,7 @@ function digest! end
 include("./OpenSSL.jl")
 include("./Libgcrypt.jl")
 include("./Nettle.jl")
+include("./HACL.jl")
 
 """
 Supported providers, represented as a tuple of submodules. Currently:
@@ -98,9 +99,10 @@ julia> collect(CryptographicHashFunctions.providers)
  CryptographicHashFunctions.OpenSSL
  CryptographicHashFunctions.Libgcrypt
  CryptographicHashFunctions.Nettle
+ CryptographicHashFunctions.HACL
 ```
 """
-const providers = (OpenSSL, Libgcrypt, Nettle)
+const providers = (OpenSSL, Libgcrypt, Nettle, HACL)
 
 """
 Default provider, represented as a submodule. Currently:

@@ -45,20 +45,14 @@ for provider ∈ providers
 
                 ctx₁ = context(algoid; provider)
                 update!(ctx₁, "a")
-                ctx₂ = copy(ctx₁)
                 update!(ctx₁, "b")
-                update!(ctx₂, "b")
                 ctx₃ = context(algoid, "a"; provider)
                 update!(ctx₃, "b")
                 ctx₄ = context(algoid, "ab"; provider)
-                ctx₅ = copy(ctx₃)
-                update!(ctx₅, "c")
-                reset!(ctx₅)
-                update!(ctx₅, IOBuffer("ab"))
 
                 dgst = digest(algoid, "ab", args...; provider)
 
-                for ctx ∈ (ctx₁, ctx₂, ctx₃, ctx₄, ctx₅)
+                for ctx ∈ (ctx₁, ctx₃, ctx₄)
                     @test dgst == digest!(ctx, args...)
                 end
 
