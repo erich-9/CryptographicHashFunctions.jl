@@ -20,6 +20,7 @@ The supported hash functions and [extendable-output functions](https://en.wikipe
   - [SHA-1](https://en.wikipedia.org/wiki/SHA-1)
   - [SHA-2 family](https://en.wikipedia.org/wiki/SHA-2)
   - [SHA-3 family](https://en.wikipedia.org/wiki/SHA-3)
+  - [MD2](https://en.wikipedia.org/wiki/MD2_(hash_function))
   - [MD4](https://en.wikipedia.org/wiki/MD4)
   - [MD5](https://en.wikipedia.org/wiki/MD5)
   - [RIPEMD-160](https://en.wikipedia.org/wiki/RIPEMD)
@@ -36,3 +37,4 @@ The algorithms are provided by binding to the following cryptographic libraries:
 
   - [OpenSSL](https://www.openssl.org/) via [OpenSSL_jll.jl](https://github.com/JuliaBinaryWrappers/OpenSSL_jll.jl)
   - [Libgcrypt](https://gnupg.org/software/libgcrypt/index.html) via [Libgcrypt_jll.jl](https://github.com/JuliaBinaryWrappers/Libgcrypt_jll.jl)
+  - [Nettle](https://www.lysator.liu.se/%7Enisse/nettle/) via [Nettle_jll.jl](https://github.com/JuliaBinaryWrappers/Nettle_jll.jl)

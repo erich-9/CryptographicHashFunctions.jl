@@ -14,6 +14,7 @@ export HMAC, context, reset!, update!, digest!
     BLAKE2S_256
     GOST94
     GOST94CP
+    MD2
     MD4
     MD5
     RIPEMD160
@@ -86,16 +87,20 @@ function digest! end
 
 include("./OpenSSL.jl")
 include("./Libgcrypt.jl")
+include("./Nettle.jl")
 
 """
 Supported providers, represented as a tuple of submodules. Currently:
 
 ```julia-repl
-julia> CryptographicHashFunctions.providers
-(CryptographicHashFunctions.OpenSSL, CryptographicHashFunctions.Libgcrypt)
+julia> collect(CryptographicHashFunctions.providers)
+3-element Vector{Module}:
+ CryptographicHashFunctions.OpenSSL
+ CryptographicHashFunctions.Libgcrypt
+ CryptographicHashFunctions.Nettle
 ```
 """
-const providers = (OpenSSL, Libgcrypt)
+const providers = (OpenSSL, Libgcrypt, Nettle)
 
 """
 Default provider, represented as a submodule. Currently:
