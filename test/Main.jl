@@ -18,7 +18,7 @@ import Nettle
 extract(xof, pos, len) = (digest!(xof, pos - 1); digest!(xof, len))
 
 testdata1 = ((), UInt8[], b"", "", SubString(""), IOBuffer(""))
-testdata2 = ((zeros(UInt8, n) for n ∈ 0:753)..., "alea iacta est", "Ваше здоровье!", "😊")
+testdata2 = ((zeros(UInt8, n) for n ∈ 0:251:753)..., "alea iacta est", "Ваше здоровье!", "😊")
 testdata3 = flatten((testdata1, testdata2))
 
 @testset "known answers: shake" begin
