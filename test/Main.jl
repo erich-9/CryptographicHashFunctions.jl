@@ -18,7 +18,7 @@ import Nettle
 extract(xof, pos, len) = (digest!(xof, pos - 1); digest!(xof, len))
 
 testdata1 = ((), UInt8[], b"", "", SubString(""), IOBuffer(""))
-testdata2 = ((zeros(UInt8, n) for n ∈ 0:251:753)..., "alea iacta est", "Ваше здоровье!", "😊")
+testdata2 = ((zeros(UInt8, n) for n ∈ 0:42:753)..., "alea iacta est", "Ваше здоровье!", "😊")
 testdata3 = flatten((testdata1, testdata2))
 
 @testset "known answers: shake" begin
@@ -39,7 +39,7 @@ end
 
 for provider ∈ providers
     @testset "$provider" begin
-        for algoid ∈ keys(provider.algorithms)
+        for algoid ∈ keys(provider[].algorithms)
             @testset "$algoid" begin
                 args = ifelse(algoid isa XOFAlgorithmID, (123,), ())
 
@@ -72,8 +72,8 @@ end
 
 for (i, p₁) ∈ enumerate(providers), p₂ ∈ drop(providers, i)
     @testset "$p₁ vs. $p₂" begin
-        for algoid ∈ keys(p₁.algorithms)
-            haskey(p₂.algorithms, algoid) || continue
+        for algoid ∈ keys(p₁[].algorithms)
+            haskey(p₂[].algorithms, algoid) || continue
 
             @testset "$algoid" begin
                 args = ifelse(algoid isa XOFAlgorithmID, (123,), ())

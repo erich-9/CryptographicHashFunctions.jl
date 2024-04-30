@@ -1,4 +1,4 @@
-module OpenSSL
+module _OpenSSL
 
 import ..CryptographicHashFunctions as P
 import Base.Libc.Libdl: dlopen, dlsym

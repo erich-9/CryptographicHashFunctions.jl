@@ -85,29 +85,49 @@ provider does not support streaming, further calls to `digest!` are forbidden, t
 """
 function digest! end
 
-include("./OpenSSL.jl")
-include("./Libgcrypt.jl")
-include("./Nettle.jl")
+let xs = (:OpenSSL, :Libgcrypt, :Nettle)
+    _xs = (Symbol(:_, x) for x ∈ xs)
+    xs_ = (Symbol(x, :_) for x ∈ xs)
+
+    @eval @enum ProviderID $(xs_...)
+
+    struct Provider{T}
+        Provider(T) = new{T}()
+        Base.show(io::IO, ::Provider{T}) where {T} =
+            print(io, String(Symbol(T))[1:(end - 1)])
+    end
+
+    for (x, _x, x_) ∈ zip(xs, _xs, xs_)
+        include("./$_x.jl")
+
+        @eval begin
+            export $x
+
+            const $x = Provider($x_)
+            Base.getindex(::Provider{$x_}) = $_x
+        end
+    end
+end
 
 """
-Supported providers, represented as a tuple of submodules. Currently:
+Supported providers. Currently:
 
 ```julia-repl
 julia> collect(CryptographicHashFunctions.providers)
-3-element Vector{Module}:
- CryptographicHashFunctions.OpenSSL
- CryptographicHashFunctions.Libgcrypt
- CryptographicHashFunctions.Nettle
+3-element Vector{CryptographicHashFunctions.Provider}:
+ OpenSSL
+ Libgcrypt
+ Nettle
 ```
 """
-const providers = (OpenSSL, Libgcrypt, Nettle)
+const providers = Provider.(instances(ProviderID))
 
 """
-Default provider, represented as a submodule. Currently:
+Default provider. Currently:
 
 ```julia-repl
 julia> CryptographicHashFunctions.default_provider
-CryptographicHashFunctions.OpenSSL
+OpenSSL
 ```
 """
 const default_provider = first(providers)
@@ -157,7 +177,7 @@ struct HMAC
     ctx::Context{HashAlgorithmID}
 
     function HMAC(algoid, key; provider = default_provider)
-        blocksize = provider.algorithms[algoid].blocksize
+        blocksize = provider[].algorithms[algoid].blocksize
         key⁰ = bytes(key)
         key¹ = zeros(UInt8, blocksize)
         copyto!(key¹, length(key⁰) > blocksize ? digest(algoid, key⁰; provider) : key⁰)
@@ -171,7 +191,7 @@ end
 Return a new hash context for the algorithm `algoid`.
 """
 function context(algoid; provider = default_provider)
-    provider.Context(algoid)
+    provider[].Context(algoid)
 end
 
 """
@@ -180,7 +200,7 @@ end
 Return a new hash context for the algorithm `algoid` and initialize it with `data`.
 """
 function context(algoid, data; provider = default_provider, kwargs...)
-    ctx = provider.Context(algoid)
+    ctx = context(algoid; provider)
     update!(ctx, data; kwargs...)
     ctx
 end
@@ -221,10 +241,10 @@ end
 begin
     const functions = (; id = [], hash = [], hmac = [], xof = [])
 
-    const streaming_providers = filter(x -> x.supports_streaming, providers)
+    const streaming_providers = filter(x -> x[].supports_streaming, providers)
 
     select_provider(algoid, providers) =
-        let i = findfirst(x -> haskey(x.algoid_mapping, algoid), providers)
+        let i = findfirst(x -> haskey(x[].algoid_mapping, algoid), providers)
             isnothing(i) ? nothing : providers[i]
         end
 

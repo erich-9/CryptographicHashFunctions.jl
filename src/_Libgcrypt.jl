@@ -1,4 +1,4 @@
-module Libgcrypt
+module _Libgcrypt
 
 import ..CryptographicHashFunctions as P
 import Libgcrypt_jll

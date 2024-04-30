@@ -1,4 +1,4 @@
-module Nettle
+module _Nettle
 
 import ..CryptographicHashFunctions as P
 import Base.Libc.Libdl: dlopen, dlsym
