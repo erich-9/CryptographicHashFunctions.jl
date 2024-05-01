@@ -1,13 +1,18 @@
 module _OpenSSL
 
 import ..CryptographicHashFunctions as P
-import Base.Libc.Libdl: dlopen, dlsym
 import OpenSSL_jll
 
 const lib = OpenSSL_jll.libcrypto
 
 const supports_streaming =
-    !isnothing(dlsym(dlopen(lib), :EVP_DigestSqueeze; throw_error = false))
+    !isnothing(
+        Base.Libc.Libdl.dlsym(
+            OpenSSL_jll.libcrypto_handle,
+            :EVP_DigestSqueeze;
+            throw_error = false,
+        ),
+    )
 
 const algoid_mapping = Dict(
     P.BLAKE2B_512 => "BLAKE2B-512",

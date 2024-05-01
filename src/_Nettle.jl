@@ -1,7 +1,6 @@
 module _Nettle
 
 import ..CryptographicHashFunctions as P
-import Base.Libc.Libdl: dlopen, dlsym
 import Nettle_jll
 
 const lib = Nettle_jll.libnettle
@@ -48,7 +47,11 @@ end
 const Chash_ctx = Ptr{Cvoid}
 
 function _nhsym(algoid_external)
-    dlsym(dlopen(lib), Symbol(:nettle_, algoid_external); throw_error = false)
+    Base.Libc.Libdl.dlsym(
+        Nettle_jll.libnettle_handle,
+        Symbol(:nettle_, algoid_external);
+        throw_error = false,
+    )
 end
 
 function available(algoid_external)
