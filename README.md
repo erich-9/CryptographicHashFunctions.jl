@@ -38,3 +38,4 @@ The algorithms are provided by binding to the following cryptographic libraries:
   - [OpenSSL](https://www.openssl.org/) via [OpenSSL_jll.jl](https://github.com/JuliaBinaryWrappers/OpenSSL_jll.jl)
   - [Libgcrypt](https://gnupg.org/software/libgcrypt/index.html) via [Libgcrypt_jll.jl](https://github.com/JuliaBinaryWrappers/Libgcrypt_jll.jl)
   - [Nettle](https://www.lysator.liu.se/%7Enisse/nettle/) via [Nettle_jll.jl](https://github.com/JuliaBinaryWrappers/Nettle_jll.jl)
+  - [libsodium](https://doc.libsodium.org/) via [libsodium_jll.jl](https://github.com/JuliaBinaryWrappers/libsodium_jll.jl)

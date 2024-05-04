@@ -7,6 +7,7 @@ version = "0.0.2"
 Libgcrypt_jll = "d4300ac3-e22c-5743-9152-c294e39db1e4"
 Nettle_jll = "4c82536e-c426-54e4-b420-14f461c4ed8b"
 OpenSSL_jll = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
+libsodium_jll = "a9144af2-ca23-56d9-984f-0d03f7b5ccf8"
 
 [compat]
 Aqua = "0.8"
@@ -16,6 +17,7 @@ Nettle_jll = "3.9"
 OpenSSL_jll = "3"
 Test = "<0.0.1, 1"
 julia = "1.6"
+libsodium_jll = "1.0"
 
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"

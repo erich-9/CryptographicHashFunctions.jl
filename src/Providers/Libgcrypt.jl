@@ -91,7 +91,7 @@ mutable struct Context{T} <: P.Context{T}
     end
 
     function Context(ctx::Context{T}) where {T}
-        algo = algorithms[ctx.algo.identifier]
+        algo = ctx.algo
         hd = Ref{Cgcry_md_hd_t}()
 
         rc = @ccall lib.gcry_md_copy(

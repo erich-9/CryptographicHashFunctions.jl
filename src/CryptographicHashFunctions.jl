@@ -196,13 +196,14 @@ Supported providers. Currently:
 
 ```julia-repl
 julia> collect(CryptographicHashFunctions.providers)
-3-element Vector{CryptographicHashFunctions.Provider}:
+4-element Vector{CryptographicHashFunctions.Provider}:
  OpenSSL
  Libgcrypt
  Nettle
+ libsodium
 ```
 """
-const providers = let ps = (:OpenSSL, :Libgcrypt, :Nettle)
+const providers = let ps = (:OpenSSL, :Libgcrypt, :Nettle, :libsodium)
     (M_ps, T_ps) = ((Symbol(x, :_, p) for p ∈ ps) for x ∈ (:M, :T))
 
     @eval @enum T_Provider $(T_ps...)

@@ -35,22 +35,22 @@ struct NettleHash
     digest::Ptr{Cvoid}
 
     function NettleHash(algoid_external)
-        unsafe_load(convert(Ptr{NettleHash}, _nhsym(algoid_external)))
+        unsafe_load(convert(Ptr{NettleHash}, _sym(algoid_external)))
     end
 end
 
 const Chash_ctx = Ptr{Cvoid}
 
-function _nhsym(algoid_external)
+function _sym(algoid_external; kwargs...)
     Base.Libc.Libdl.dlsym(
         Nettle_jll.libnettle_handle,
         Symbol(:nettle_, algoid_external);
-        throw_error = false,
+        kwargs...,
     )
 end
 
 function is_available(algoid_external)
-    !isnothing(_nhsym(algoid_external))
+    !isnothing(_sym(algoid_external; throw_error = false))
 end
 
 mutable struct Algorithm{T}
