@@ -15,10 +15,10 @@ const algoid_mapping = Dict(
     P.SHA256 => 1,
     P.SHA384 => 2,
     P.SHA512 => 3,
-    P.SHA3_224 => 9,
+    # P.SHA3_224 => 9,
     P.SHA3_256 => 8,
-    P.SHA3_384 => 10,
-    P.SHA3_512 => 11,
+    # P.SHA3_384 => 10,
+    # P.SHA3_512 => 11,
 )
 
 const CSpec_Hash_Definitions_hash_alg = UInt8
@@ -53,11 +53,14 @@ mutable struct Context{T} <: P.Context{T}
 
     function Context(algoid::T) where {T}
         algo = algorithms[algoid]
-        state = @ccall lib.EverCrypt_Hash_Incremental_malloc(
+        state = @ccall lib.EverCrypt_Hash_Incremental_create_in(
             algo.algoid_external::CSpec_Hash_Definitions_hash_alg,
         )::CEverCrypt_Hash_Incremental_state_t
 
-        finalizer(new{T}(algo, state)) do x
+        res = new{T}(algo, state)
+        P.reset!(res)
+
+        finalizer(res) do x
             @ccall lib.EverCrypt_Hash_Incremental_free(
                 x.state::CEverCrypt_Hash_Incremental_state_t,
             )::Cvoid
@@ -68,7 +71,7 @@ end
 Base.copy(ctx::Context) = @error "HACL: copying contexts not implemented"
 
 function P.reset!(ctx::Context)
-    @ccall lib.EverCrypt_Hash_Incremental_reset(
+    @ccall lib.EverCrypt_Hash_Incremental_init(
         ctx.state::CEverCrypt_Hash_Incremental_state_t,
     )::Cvoid
 end
@@ -87,7 +90,7 @@ end
 function P.digest!(ctx::Context)
     res = Vector{UInt8}(undef, ctx.algo.digestsize)
 
-    @ccall lib.EverCrypt_Hash_Incremental_digest(
+    @ccall lib.EverCrypt_Hash_Incremental_finish(
         ctx.state::CEverCrypt_Hash_Incremental_state_t,
         res::Ptr{Cuchar},
     )::Cvoid
