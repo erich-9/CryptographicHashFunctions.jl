@@ -85,53 +85,6 @@ provider does not support streaming, further calls to `digest!` are forbidden, t
 """
 function digest! end
 
-let xs = (:OpenSSL, :Libgcrypt, :Nettle)
-    _xs = (Symbol(:_, x) for x ∈ xs)
-    xs_ = (Symbol(x, :_) for x ∈ xs)
-
-    @eval @enum ProviderID $(xs_...)
-
-    struct Provider{T}
-        Provider(T) = new{T}()
-        Base.show(io::IO, ::Provider{T}) where {T} =
-            print(io, String(Symbol(T))[1:(end - 1)])
-    end
-
-    for (x, _x, x_) ∈ zip(xs, _xs, xs_)
-        include("./$_x.jl")
-
-        @eval begin
-            export $x
-
-            const $x = Provider($x_)
-            Base.getindex(::Provider{$x_}) = $_x
-        end
-    end
-end
-
-"""
-Supported providers. Currently:
-
-```julia-repl
-julia> collect(CryptographicHashFunctions.providers)
-3-element Vector{CryptographicHashFunctions.Provider}:
- OpenSSL
- Libgcrypt
- Nettle
-```
-"""
-const providers = Provider.(instances(ProviderID))
-
-"""
-Default provider. Currently:
-
-```julia-repl
-julia> CryptographicHashFunctions.default_provider
-OpenSSL
-```
-"""
-const default_provider = first(providers)
-
 bytes(data::AbstractVector{UInt8}) = data
 bytes(data::AbstractString) = codeunits(data)
 bytes(data::IO) = read(data)
@@ -237,6 +190,85 @@ function digest!(hmac::HMAC)
     update!(hmac.ctx, inner_digest)
     digest!(hmac.ctx)
 end
+
+"""
+Supported providers. Currently:
+
+```julia-repl
+julia> collect(CryptographicHashFunctions.providers)
+3-element Vector{CryptographicHashFunctions.Provider}:
+ OpenSSL
+ Libgcrypt
+ Nettle
+```
+"""
+const providers = let ps = (:OpenSSL, :Libgcrypt, :Nettle)
+    (M_ps, T_ps) = ((Symbol(x, :_, p) for p ∈ ps) for x ∈ (:M, :T))
+
+    @eval @enum T_Provider $(T_ps...)
+
+    struct Provider{T}
+        Provider(T) = new{T}()
+        Base.show(io::IO, ::Provider{T}) where {T} = print(io, String(Symbol(T))[3:end])
+    end
+
+    providers = Provider[]
+
+    for (p, M_p, T_p) ∈ zip(ps, M_ps, T_ps)
+        p_jll = Symbol(p, :_jll)
+        p_str = String(p)
+
+        @eval module $M_p
+
+        import ..CryptographicHashFunctions as P
+        import $p_jll
+
+        if $p_jll.is_available()
+            include("Providers/" * $p_str * ".jl")
+
+            const algorithms = Dict{P.AlgorithmID, Algorithm}()
+
+            for (algoid, algoid_external) ∈ copy(algoid_mapping)
+                if !is_available(algoid_external)
+                    delete!(algoid_mapping, algoid)
+                    @info $p_str * ": $algoid not provided"
+                end
+            end
+
+            function __init__()
+                for (algoid, algoid_external) ∈ algoid_mapping
+                    algorithms[algoid] = Algorithm(algoid, algoid_external)
+                end
+            end
+        end
+
+        end # module
+
+        if @eval $M_p.$p_jll.is_available()
+            @eval begin
+                const $p = Provider($T_p)
+                Base.getindex(::Provider{$T_p}) = $M_p
+
+                push!($providers, $p)
+                export $p
+            end
+        else
+            @info "$p: provider not available"
+        end
+    end
+
+    Tuple(providers)
+end
+
+"""
+Default provider. Currently:
+
+```julia-repl
+julia> CryptographicHashFunctions.default_provider
+OpenSSL
+```
+"""
+const default_provider = first(providers)
 
 begin
     const functions = (; id = [], hash = [], hmac = [], xof = [])

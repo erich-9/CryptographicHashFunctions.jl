@@ -1,8 +1,3 @@
-module _Nettle
-
-import ..CryptographicHashFunctions as P
-import Nettle_jll
-
 const lib = Nettle_jll.libnettle
 
 const supports_streaming = false
@@ -54,7 +49,7 @@ function _nhsym(algoid_external)
     )
 end
 
-function available(algoid_external)
+function is_available(algoid_external)
     !isnothing(_nhsym(algoid_external))
 end
 
@@ -106,22 +101,3 @@ function P.digest!(ctx::Context)
 
     res
 end
-
-begin
-    for (algoid, algoid_external) ∈ copy(algoid_mapping)
-        if !available(algoid_external)
-            delete!(algoid_mapping, algoid)
-            @info "Nettle: $algoid not provided"
-        end
-    end
-
-    const algorithms = Dict{P.AlgorithmID, Algorithm}()
-
-    function __init__()
-        for (algoid, algoid_external) ∈ algoid_mapping
-            algorithms[algoid] = Algorithm(algoid, algoid_external)
-        end
-    end
-end
-
-end # module

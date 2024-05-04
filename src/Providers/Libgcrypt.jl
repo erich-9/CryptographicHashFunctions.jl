@@ -1,8 +1,3 @@
-module _Libgcrypt
-
-import ..CryptographicHashFunctions as P
-import Libgcrypt_jll
-
 const lib = Libgcrypt_jll.libgcrypt
 
 const supports_streaming = true
@@ -47,7 +42,7 @@ const Cgcry_error_t = Cuint
 const Cgcry_md_algos = Cint
 const Cgcry_md_hd_t = Ptr{Cvoid}
 
-function available(algoid_external)
+function is_available(algoid_external)
     (algono, _) = algoid_external
 
     rc = @ccall lib.gcry_md_algo_info(
@@ -149,22 +144,3 @@ function P.digest!(ctx::Context{P.XOFAlgorithmID}, len::Integer)
 
     res
 end
-
-begin
-    for (algoid, algoid_external) ∈ copy(algoid_mapping)
-        if !available(algoid_external)
-            delete!(algoid_mapping, algoid)
-            @info "Libgcrypt: $algoid not provided"
-        end
-    end
-
-    const algorithms = Dict{P.AlgorithmID, Algorithm}()
-
-    function __init__()
-        for (algoid, algoid_external) ∈ algoid_mapping
-            algorithms[algoid] = Algorithm(algoid, algoid_external)
-        end
-    end
-end
-
-end # module

@@ -1,8 +1,3 @@
-module _OpenSSL
-
-import ..CryptographicHashFunctions as P
-import OpenSSL_jll
-
 const lib = OpenSSL_jll.libcrypto
 
 const supports_streaming =
@@ -38,7 +33,7 @@ const algoid_mapping = Dict(
 const Cmd = Ptr{Cvoid}
 const Cmd_ctx = Ptr{Cvoid}
 
-function available(algoid_external)
+function is_available(algoid_external)
     md = @ccall lib.EVP_MD_fetch(
         C_NULL::Ptr{Cvoid},
         algoid_external::Cstring,
@@ -172,22 +167,3 @@ else
         res
     end
 end
-
-begin
-    for (algoid, algoid_external) ∈ copy(algoid_mapping)
-        if !available(algoid_external)
-            delete!(algoid_mapping, algoid)
-            @info "OpenSSL: $algoid not provided"
-        end
-    end
-
-    const algorithms = Dict{P.AlgorithmID, Algorithm}()
-
-    function __init__()
-        for (algoid, algoid_external) ∈ algoid_mapping
-            algorithms[algoid] = Algorithm(algoid, algoid_external)
-        end
-    end
-end
-
-end # module
