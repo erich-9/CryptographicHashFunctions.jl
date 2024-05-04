@@ -29,6 +29,8 @@ export HMAC, context, reset!, update!, digest!
     SHA3_256
     SHA3_384
     SHA3_512
+    SKEIN512_256
+    SKEIN512_512
     SM3
     STRIBOG256
     STRIBOG512
@@ -201,9 +203,10 @@ julia> collect(CryptographicHashFunctions.providers)
  Libgcrypt
  Nettle
  libsodium
+ Botan
 ```
 """
-const providers = let ps = (:OpenSSL, :Libgcrypt, :Nettle, :libsodium)
+const providers = let ps = (:OpenSSL, :Libgcrypt, :Nettle, :libsodium, :Botan)
     (M_ps, T_ps) = ((Symbol(x, :_, p) for p ∈ ps) for x ∈ (:M, :T))
 
     @eval @enum T_Provider $(T_ps...)
