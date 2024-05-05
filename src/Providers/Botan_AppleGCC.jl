@@ -1,4 +1,4 @@
-const lib = Botan_jll.libbotan
+const lib = Botan_AppleGCC_jll.libbotan
 
 const supports_streaming = false
 

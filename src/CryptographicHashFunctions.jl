@@ -203,10 +203,10 @@ julia> collect(CryptographicHashFunctions.providers)
  Libgcrypt
  Nettle
  libsodium
- Botan
+ Botan_AppleGCC
 ```
 """
-const providers = let ps = (:OpenSSL, :Libgcrypt, :Nettle, :libsodium, :Botan)
+const providers = let ps = (:OpenSSL, :Libgcrypt, :Nettle, :libsodium, :Botan_AppleGCC)
     (M_ps, T_ps) = ((Symbol(x, :_, p) for p ∈ ps) for x ∈ (:M, :T))
 
     @eval @enum T_Provider $(T_ps...)

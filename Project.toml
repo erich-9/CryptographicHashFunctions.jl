@@ -4,7 +4,7 @@ authors = ["Erich Neun <erich-9@gmx.de> and contributors"]
 version = "0.0.2"
 
 [deps]
-Botan_jll = "762aa718-59cd-5b4f-84ea-df9eef3aa8fa"
+Botan_AppleGCC_jll = "e9d7134b-595d-5448-96dd-f14c49d8fb97"
 Libgcrypt_jll = "d4300ac3-e22c-5743-9152-c294e39db1e4"
 Nettle_jll = "4c82536e-c426-54e4-b420-14f461c4ed8b"
 OpenSSL_jll = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
@@ -12,7 +12,7 @@ libsodium_jll = "a9144af2-ca23-56d9-984f-0d03f7b5ccf8"
 
 [compat]
 Aqua = "0.8"
-Botan_jll = "3.4.0"
+Botan_AppleGCC_jll = "3.4.0"
 Libgcrypt_jll = "1.8"
 Nettle = "1"
 Nettle_jll = "3.9"
